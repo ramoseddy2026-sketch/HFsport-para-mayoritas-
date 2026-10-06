@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HF SPORT | Administrar catálogo</title>
+<style>
+body{margin:0;font-family:Arial;background:#f4f5f7;color:#171a1e}.top{background:#11151b;color:#fff;padding:14px 5%;font-weight:900}.wrap{width:min(1050px,94%);margin:20px auto}.panel{background:#fff;border-radius:16px;padding:20px;margin-bottom:18px;box-shadow:0 4px 18px #0000000b}h1{margin-top:0}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{margin:9px 0}.field label{display:block;font-size:12px;font-weight:900;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid #d7dbe0;border-radius:9px;font:inherit}.btn{background:#e21b2d;color:#fff;border:0;border-radius:9px;padding:12px 15px;font-weight:900;cursor:pointer}.btn.gray{background:#222}.btn.light{background:#e9ebee;color:#111}.products{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.p{border:1px solid #ddd;border-radius:12px;padding:10px}.p img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;background:#eee}.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.hint{font-size:12px;color:#68717c}@media(max-width:700px){.row,.products{grid-template-columns:1fr}}
+</style></head><body><div class="top">HF SPORT · ADMINISTRAR CATÁLOGO</div><div class="wrap">
+<div id="login" class="panel"><h1>Acceso privado</h1><p>Ingresá tu clave de administrador.</p><input id="pass" type="password" placeholder="Contraseña" style="padding:12px;width:100%;box-sizing:border-box;border:1px solid #ddd;border-radius:9px"><br><br><button class="btn" onclick="login()">ENTRAR</button><p id="loginMsg" class="hint"></p></div>
+<div id="app" style="display:none">
+<div class="panel"><h1 id="title">Agregar producto</h1><div class="row">
+<div class="field"><label>Temporada</label><select id="season"><option value="verano">Verano</option><option value="invierno">Invierno</option><option value="media">Media estación</option></select></div>
+<div class="field"><label>Público</label><select id="audience"><option>Hombre</option><option>Mujer</option><option>Niño</option><option>Unisex</option></select></div>
+<div class="field"><label>Categoría</label><input id="category" placeholder="Shorts, Remeras, Buzos..."></div>
+<div class="field"><label>Subcategoría / tela</label><input id="subcategory" placeholder="Lycra 40, W18, Soft..."></div>
+<div class="field"><label>Nombre / modelo</label><input id="name"></div>
+<div class="field"><label>Precio</label><input id="price" placeholder="$5.500 o Consultar"></div>
+<div class="field"><label>Talles</label><input id="sizes" placeholder="2, 3, 4, 5, 6, Especiales"></div>
+<div class="field"><label>Colores</label><input id="colors" placeholder="Negro, Azul, Gris"></div></div>
+<div class="field"><label>Descripción</label><textarea id="description" rows="4"></textarea></div>
+<div class="field"><label>Foto principal</label><input id="image" type="file" accept="image/*"><p class="hint">La foto se publica tal cual la subas. No se modifican colores, cortes ni detalles.</p></div>
+<button class="btn" onclick="saveProduct()">PUBLICAR / GUARDAR</button> <button class="btn light" onclick="clearForm()">NUEVO</button>
+</div>
+<div class="panel"><h2>Productos publicados</h2><div id="list" class="products"></div></div>
+</div></div>
+<script>
+let token="", editing=null, products=[];
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+async function login(){const p=document.getElementById("pass").value;const r=await fetch("/api/admin/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:p})});if(r.ok){token="ok";document.getElementById("login").style.display="none";document.getElementById("app").style.display="block";load()}else document.getElementById("loginMsg").textContent="Clave incorrecta."}
+async function load(){const r=await fetch("/api/products");products=r.ok?await r.json():[];draw()}
+function draw(){document.getElementById("list").innerHTML=products.map(p=>`<div class="p">${p.image?`<img src="${p.image}">`:"<div style='aspect-ratio:1;background:#eee;display:grid;place-items:center'>Sin foto</div>"}<b>${esc(p.name)}</b><div class="hint">${esc(p.season)} · ${esc(p.category)} · ${esc(p.subcategory)}<br>${esc(p.price)}</div><div class="actions"><button class="btn gray" onclick="edit('${p.id}')">EDITAR</button><button class="btn light" onclick="toggle('${p.id}')">${p.active===false?"PUBLICAR":"OCULTAR"}</button><button class="btn light" onclick="removeP('${p.id}')">ELIMINAR</button></div></div>`).join("")||"<p class='hint'>Todavía no hay productos publicados.</p>"}
+function edit(id){const p=products.find(x=>x.id===id);editing=id;document.getElementById("title").textContent="Editar producto";for(const k of ["season","audience","category","subcategory","name","price","description"])document.getElementById(k).value=p[k]||"";document.getElementById("sizes").value=(p.sizes||[]).join(", ");document.getElementById("colors").value=(p.colors||[]).join(", ");}
+function clearForm(){editing=null;document.getElementById("title").textContent="Agregar producto";document.querySelectorAll("#app input,#app textarea").forEach(x=>{if(x.type!=="file")x.value=""});document.getElementById("season").value="verano";document.getElementById("audience").value="Hombre";}
+async function saveProduct(){const fd=new FormData();const data={id:editing||crypto.randomUUID(),season:season.value,audience:audience.value,category:category.value,subcategory:subcategory.value,name:name.value,price:price.value,sizes:sizes.value.split(",").map(x=>x.trim()).filter(Boolean),colors:colors.value.split(",").map(x=>x.trim()).filter(Boolean),description:description.value,active:true};fd.append("data",JSON.stringify(data));if(image.files[0])fd.append("image",image.files[0]);const r=await fetch("/api/admin/products",{method:"POST",body:fd});if(r.ok){alert("Producto guardado.");clearForm();load()}else alert("No se pudo guardar.")}
+async function toggle(id){const r=await fetch("/api/admin/toggle",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});if(r.ok)load()}
+async function removeP(id){if(!confirm("¿Eliminar este producto?"))return;const r=await fetch("/api/admin/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});if(r.ok)load()}
+</script></body></html>

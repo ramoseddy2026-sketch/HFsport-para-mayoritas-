@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HF SPORT | Fábrica de indumentaria deportiva</title>
+<meta name="description" content="HF SPORT — Fabricamos para quienes venden. Indumentaria deportiva mayorista y personalizada.">
+<style>
+:root{--red:#e21b2d;--dark:#11151b;--navy:#0d2238;--light:#f5f6f8;--line:#e2e5e9}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fff;color:#16191d}
+a{text-decoration:none;color:inherit}.top{background:var(--dark);color:#fff;text-align:center;padding:9px;font-size:12px;font-weight:700;letter-spacing:.4px}
+nav{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:12px 5%;gap:15px}
+.logo{font-weight:900;font-size:25px;letter-spacing:1px}.logo span{color:var(--red)}
+.navlinks{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.navlinks a{font-size:13px;font-weight:700}
+.admin{background:var(--dark);color:#fff;padding:10px 14px;border-radius:9px}
+.hero{background:linear-gradient(120deg,#090d12,#172a3d);color:#fff;padding:42px 5%;display:grid;grid-template-columns:1fr 1.05fr;gap:30px;align-items:center}
+.hero h1{font-size:clamp(35px,5vw,64px);line-height:.98;margin:0 0 14px}.hero h1 span{color:#ff2639}.hero p{font-size:18px;line-height:1.5;max-width:620px;color:#e8edf3}
+.btn{display:inline-block;background:var(--red);color:#fff;padding:14px 18px;border-radius:10px;font-weight:900;margin:7px 5px 0 0;border:0;cursor:pointer}
+.btn.alt{background:#fff;color:#111}.hero img{width:100%;max-height:540px;object-fit:cover;border-radius:18px;display:block}
+.wrap{width:min(1180px,92%);margin:auto}.intro{padding:34px 0 10px}.intro h2{font-size:30px;margin:0 0 8px}.intro p{color:#5b626c}
+.season{margin:28px 0}.season-head{background:var(--dark);color:#fff;border-radius:14px;padding:17px 20px;display:flex;justify-content:space-between;align-items:center}.season-head h3{margin:0;font-size:22px}.filters{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-weight:700;font-size:12px;cursor:pointer}.chip.active{background:var(--red);border-color:var(--red);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(0,0,0,.04)}.photo{aspect-ratio:1/1;background:#f0f1f3;display:flex;align-items:center;justify-content:center;overflow:hidden}.photo img{width:100%;height:100%;object-fit:cover}.card-body{padding:13px}.card h4{margin:0 0 6px;font-size:16px}.meta{font-size:12px;color:#68717c;line-height:1.45}.price{font-weight:900;font-size:18px;margin:8px 0}.stock{font-size:11px;font-weight:900;color:#14833b}.stock.off{color:#b42318}.card .btn{width:100%;text-align:center;margin:8px 0 0;padding:11px}
+.empty{padding:35px;text-align:center;color:#68717c;border:1px dashed #cdd2d8;border-radius:14px}
+footer{margin-top:45px;background:var(--dark);color:#fff;padding:35px 5%;text-align:center}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:100;display:none;align-items:center;justify-content:center;padding:18px}.modal.show{display:flex}.modalbox{background:#fff;border-radius:16px;width:min(920px,100%);max-height:92vh;overflow:auto;padding:20px}.close{float:right;border:0;background:#eee;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:20px}.detail{display:grid;grid-template-columns:1fr 1fr;gap:24px}.detail img{width:100%;border-radius:12px}.detail h2{margin-top:0}.swatches{display:flex;gap:8px;flex-wrap:wrap}.swatch{padding:7px 10px;border:1px solid #ccc;border-radius:8px;font-size:12px;font-weight:700}
+@media(max-width:850px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.navlinks a:not(.admin){display:none}.detail{grid-template-columns:1fr}}
+@media(max-width:480px){.grid{grid-template-columns:1fr 1fr}.card h4{font-size:14px}.price{font-size:16px}}
+</style>
+</head>
+<body>
+<div class="top">🚚 ENVÍOS A TODO EL PAÍS · VENTA MAYORISTA · FABRICACIÓN PROPIA</div>
+<nav><div class="logo">HF <span>SPORT</span></div><div class="navlinks"><a href="#catalogo">CATÁLOGO</a><a href="#empresa">NOSOTROS</a><a class="admin" href="/admin.html">🔐 ADMINISTRAR</a></div></nav>
+<section class="hero">
+  <div><h1>Fabricamos para quienes <span>venden.</span></h1><p>Indumentaria deportiva para revendedores, tiendas, clubes, equipos y emprendedores. Producción por volumen y diseños personalizados.</p><a class="btn" href="#catalogo">VER CATÁLOGO</a><a class="btn alt" href="https://wa.me/?text=Hola%20HF%20SPORT%2C%20quiero%20solicitar%20un%20presupuesto%20mayorista.">SOLICITAR PRESUPUESTO</a></div>
+  <img src="/assets/hf-sport-hero.png" alt="HF SPORT indumentaria deportiva">
+</section>
+<main class="wrap" id="catalogo">
+<section class="intro"><h2>Catálogo HF SPORT</h2><p>Elegí la temporada, la categoría y el modelo. Podés consultar colores, talles y precio mayorista.</p></section>
+<div id="catalog"></div>
+</main>
+<section id="empresa" class="wrap intro"><h2>Fabricación deportiva</h2><p>Trabajamos con Lycra 40, W18, W15, Set, Soft, Frisa y otras telas según el modelo. Fabricamos para hombre, mujer y niños.</p></section>
+<footer>HF SPORT · Fábrica de indumentaria deportiva · Venta mayorista · Envíos a todo el país</footer>
+
+<div class="modal" id="modal"><div class="modalbox"><button class="close" onclick="closeModal()">×</button><div id="detail"></div></div></div>
+<script>
+const defaultProducts=[
+ {id:"demo1",season:"verano",audience:"hombre",category:"Shorts",subcategory:"Lycra 40",name:"Short Lycra 40 Premium",description:"Short deportivo de fabricación propia. Consultar colores y talles.",sizes:["2","3","4","5","6","Especiales"],colors:["Negro","Azul","Gris"],price:"$5.500",image:"",active:true},
+ {id:"demo2",season:"verano",audience:"mujer",category:"Remeras",subcategory:"Lycra",name:"Remera deportiva de Lycra",description:"Modelo deportivo para venta mayorista.",sizes:["2","3","4","5","6"],colors:["Negro","Rojo","Azul"],price:"Consultar",image:"",active:true},
+ {id:"demo3",season:"invierno",audience:"hombre",category:"Buzos",subcategory:"Lycra",name:"Buzo de Lycra",description:"Con capucha o sin capucha según modelo.",sizes:["2","3","4","5","6"],colors:["Negro","Gris","Azul"],price:"Consultar",image:"",active:true}
+];
+let products=[];
+async function loadProducts(){try{const r=await fetch("/api/products"); if(r.ok){products=await r.json();}}catch(e){} if(!products.length)products=defaultProducts; render();}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+const seasonNames={verano:"☀️ Prendas de verano",invierno:"❄️ Prendas de invierno",media:"🌤️ Prendas de media estación"};
+function render(){
+ const root=document.getElementById("catalog"); root.innerHTML="";
+ ["verano","invierno","media"].forEach(season=>{
+   const list=products.filter(p=>p.active!==false&&p.season===season);
+   const sec=document.createElement("section");sec.className="season";
+   sec.innerHTML=`<div class="season-head"><h3>${seasonNames[season]}</h3><span>${list.length} modelos</span></div>`;
+   const filters=[...new Set(list.map(p=>p.category))];
+   const chips=document.createElement("div");chips.className="filters";
+   chips.innerHTML=`<button class="chip active" data-filter="all">Todos</button>`+filters.map(x=>`<button class="chip" data-filter="${esc(x)}">${esc(x)}</button>`).join("");
+   sec.appendChild(chips);
+   const grid=document.createElement("div");grid.className="grid";
+   function draw(filter="all"){grid.innerHTML="";const rows=list.filter(p=>filter==="all"||p.category===filter);if(!rows.length){grid.innerHTML='<div class="empty">No hay modelos publicados en esta categoría.</div>';return}
+    rows.forEach(p=>{const card=document.createElement("article");card.className="card";card.innerHTML=`<div class="photo">${p.image?`<img src="${p.image}" alt="${esc(p.name)}">`:"<span>HF SPORT</span>"}</div><div class="card-body"><h4>${esc(p.name)}</h4><div class="meta">${esc(p.subcategory||"")} · ${esc(p.audience||"")}</div><div class="price">${esc(p.price||"Consultar")}</div><div class="stock">● Disponible</div><button class="btn" onclick='openDetail(${JSON.stringify(p).replace(/</g,"\\u003c")})'>VER MODELO</button></div>`;grid.appendChild(card);});
+   }
+   chips.addEventListener("click",e=>{if(!e.target.matches(".chip"))return;chips.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));e.target.classList.add("active");draw(e.target.dataset.filter)});
+   draw();sec.appendChild(chips);sec.appendChild(grid);root.appendChild(sec);
+ });
+}
+function openDetail(p){document.getElementById("detail").innerHTML=`<div class="detail"><div>${p.image?`<img src="${p.image}" alt="${esc(p.name)}">`:"<div class='empty'>Foto del producto</div>"}</div><div><h2>${esc(p.name)}</h2><p>${esc(p.description||"")}</p><p><b>Tela:</b> ${esc(p.subcategory||"")}</p><p><b>Talles:</b> ${esc((p.sizes||[]).join(" · "))}</p><p><b>Colores:</b></p><div class="swatches">${(p.colors||[]).map(c=>`<span class="swatch">${esc(c)}</span>`).join("")}</div><h2>${esc(p.price||"Consultar")}</h2><a class="btn" href="https://wa.me/?text=${encodeURIComponent("Hola HF SPORT, quiero consultar por el modelo "+p.name)}">CONSULTAR ESTE MODELO</a></div></div>`;document.getElementById("modal").classList.add("show")}
+function closeModal(){document.getElementById("modal").classList.remove("show")}
+loadProducts();
+</script>
+</body>
+</html>
