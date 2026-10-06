@@ -1,0 +1,7 @@
+{
+  "name": "hf-sport-catalogo-admin",
+  "private": true,
+  "dependencies": {
+    "@netlify/blobs": "latest"
+  }
+}
