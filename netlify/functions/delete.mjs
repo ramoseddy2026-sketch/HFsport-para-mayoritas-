@@ -50,4 +50,20 @@ export default async (req) => {
     return new Response(
       JSON.stringify({ ok: true }),
       {
-        status:
+status: 200,
+headers: { "Content-Type": "application/json" }
+      }
+      );
+    } catch (error) {
+return new Response(
+JSON.stringify({
+ok: false,
+error: error?.message || "Error interno"
+}),
+{
+status: 500,
+headers: { "Content-Type": "application/json" }
+}
+);
+}
+};
