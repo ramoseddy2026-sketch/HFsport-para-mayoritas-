@@ -29,9 +29,43 @@ export default async (req) => {
     });
 
     const products = (await store.get("products", { type: "json" })) || [];
-
     const product = products.find((item) => item.id === id);
 
     if (!product) {
       return new Response(
-        JSON.stringify({ ok
+        JSON.stringify({ ok: false, error: "Producto no encontrado" }),
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    const updatedProducts = products.map((item) =>
+      item.id === id ? { ...item, active: !item.active } : item
+    );
+
+    await store.set("products", JSON.stringify(updatedProducts), {
+      metadata: { contentType: "application/json" }
+    });
+
+    return new Response(
+      JSON.stringify({ ok: true }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+  } catch (error) {
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        error: error?.message || "Error interno"
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+  }
+};
