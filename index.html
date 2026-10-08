@@ -58,16 +58,46 @@ function render(){
    const list=products.filter(p=>p.active!==false&&p.season===season);
    const sec=document.createElement("section");sec.className="season";
    sec.innerHTML=`<div class="season-head"><h3>${seasonNames[season]}</h3><span>${list.length} modelos</span></div>`;
-   const filters=[...new Set(list.map(p=>p.category))];
-   const chips=document.createElement("div");chips.className="filters";
-   chips.innerHTML=`<button class="chip active" data-filter="all">Todos</button>`+filters.map(x=>`<button class="chip" data-filter="${esc(x)}">${esc(x)}</button>`).join("");
-   sec.appendChild(chips);
-   const grid=document.createElement("div");grid.className="grid";
-   function draw(filter="all"){grid.innerHTML="";const rows=list.filter(p=>filter==="all"||p.category===filter);if(!rows.length){grid.innerHTML='<div class="empty">No hay modelos publicados en esta categoría.</div>';return}
-    rows.forEach(p=>{const card=document.createElement("article");card.className="card";card.innerHTML=`<div class="photo">${p.image?`<img src="${p.image}" alt="${esc(p.name)}">`:"<span>HF SPORT</span>"}</div><div class="card-body"><h4>${esc(p.name)}</h4><div class="meta">${esc(p.subcategory||"")} · ${esc(p.audience||"")}</div><div class="price">${esc(p.price||"Consultar")}</div><div class="stock">● Disponible</div><button class="btn" onclick='openDetail(${JSON.stringify(p).replace(/</g,"\\u003c")})'>VER MODELO</button></div>`;grid.appendChild(card);});
-   }
-   chips.addEventListener("click",e=>{if(!e.target.matches(".chip"))return;chips.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));e.target.classList.add("active");draw(e.target.dataset.filter)});
-   draw();sec.appendChild(chips);sec.appendChild(grid);root.appendChild(sec);
+   const filters=["all",...new Set(list.map(p=>p.category))];
+const chips=document.createElement("div");
+chips.className="filters";
+
+chips.innerHTML='<button class="chip active" data-filter="all">Todos</button>'+
+filters.slice(1).map(x=>`<button class="chip" data-filter="${esc(x)}">${esc(x)}</button>`).join("");
+
+sec.appendChild(chips);
+
+const grid=document.createElement("div");
+grid.className="grid";
+
+function draw(filter="all"){
+  grid.innerHTML="";
+  const rows=list.filter(p=>filter==="all"||p.category===filter);
+
+  rows.forEach(p=>{
+    const card=document.createElement("article");
+    card.className="card";
+    card.innerHTML=`
+      <img src="${p.image||""}" alt="${esc(p.name||p.category)}">
+      <h3>${esc(p.name||p.category)}</h3>
+      <p>${esc(p.subcategory||"")}</p>
+      <strong>${p.price ? "$"+p.price : "Consultar precio"}</strong>
+    `;
+    card.addEventListener("click",()=>openDetail(p));
+    grid.appendChild(card);
+  });
+}
+
+chips.addEventListener("click",e=>{
+  if(!e.target.matches(".chip")) return;
+  chips.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+  e.target.classList.add("active");
+  draw(e.target.dataset.filter);
+});
+
+draw();
+sec.appendChild(grid);
+root.appendChild(sec);
  });
 }
 function openDetail(p){document.getElementById("detail").innerHTML=`<div class="detail"><div>${p.image?`<img src="${p.image}" alt="${esc(p.name)}">`:"<div class='empty'>Foto del producto</div>"}</div><div><h2>${esc(p.name)}</h2><p>${esc(p.description||"")}</p><p><b>Tela:</b> ${esc(p.subcategory||"")}</p><p><b>Talles:</b> ${esc((p.sizes||[]).join(" · "))}</p><p><b>Colores:</b></p><div class="swatches">${(p.colors||[]).map(c=>`<span class="swatch">${esc(c)}</span>`).join("")}</div><h2>${esc(p.price||"Consultar")}</h2><a class="btn" href="https://wa.me/?text=${encodeURIComponent("Hola HF SPORT, quiero consultar por el modelo "+p.name)}">CONSULTAR ESTE MODELO</a></div></div>`;document.getElementById("modal").classList.add("show")}
