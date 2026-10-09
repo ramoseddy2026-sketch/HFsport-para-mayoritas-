@@ -1,37 +1,68 @@
+
 import { getStore } from "@netlify/blobs";
 
 function isAdmin(req) {
   const cookie = req.headers.get("cookie") || "";
-  return cookie.includes("hf_admin=1");
+  return cookie.split(";").some(
+    (part) => part.trim() === "hf_admin=1"
+  );
+}
+
+function jsonResponse(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store"
+    }
+  });
 }
 
 export default async (req) => {
-  if (!isAdmin(req)) {
-    return new Response(
-      JSON.stringify({ ok: false, error: "No autorizado" }),
-      {
-        status: 401,
-        headers: { "Content-Type": "application/json" }
-      }
+  if (req.method !== "POST") {
+    return jsonResponse(
+      { ok: false, error: "Método no permitido" },
+      405
     );
   }
 
-  if (req.method !== "POST") {
-    return new Response("Method Not Allowed", { status: 405 });
+  if (!isAdmin(req)) {
+    return jsonResponse(
+      { ok: false, error: "No autorizado. Volvé a ingresar al administrador." },
+      401
+    );
   }
 
   try {
     const form = await req.formData();
+    const rawData = form.get("data");
 
-    const name = String(form.get("name") || "").trim();
+    let data;
+
+    if (typeof rawData === "string" && rawData) {
+      data = JSON.parse(rawData);
+    } else {
+      data = {
+        name: form.get("name"),
+        season: form.get("season"),
+        audience: form.get("audience"),
+        category: form.get("category"),
+        subcategory: form.get("subcategory"),
+        fabric: form.get("fabric"),
+        price: form.get("price"),
+        sizes: form.get("sizes"),
+        colors: form.get("colors"),
+        description: form.get("description"),
+        id: form.get("id")
+      };
+    }
+
+    const name = String(data.name || "").trim();
 
     if (!name) {
-      return new Response(
-        JSON.stringify({ ok: false, error: "Falta el nombre del producto" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" }
-        }
+      return jsonResponse(
+        { ok: false, error: "Falta el nombre del producto." },
+        400
       );
     }
 
@@ -40,16 +71,48 @@ export default async (req) => {
       consistency: "strong"
     });
 
-    const products = (await store.get("products", { type: "json" })) || [];
+    // Usar siempre la misma clave para conservar el catálogo.
+    const products =
+      (await store.get("products", { type: "json" })) || [];
 
-    const id = crypto.randomUUID();
+    const id = String(data.id || crypto.randomUUID());
+    const existingIndex = products.findIndex(
+      (product) => String(product.id) === id
+    );
+    const existing =
+      existingIndex >= 0 ? products[existingIndex] : null;
+
     const image = form.get("image");
+    let imageUrl = existing?.image || data.image || "";
 
-    let imageUrl = "";
+    if (
+      image &&
+      typeof image === "object" &&
+      typeof image.size === "number" &&
+      image.size > 0
+    ) {
+      if (!image.type || !image.type.startsWith("image/")) {
+        return jsonResponse(
+          { ok: false, error: "El archivo seleccionado no es una imagen válida." },
+          400
+        );
+      }
 
-    if (image && typeof image === "object" && image.size > 0) {
-      const extension =
-        String(image.name || "image.jpg").split(".").pop() || "jpg";
+      const extensions = {
+        "image/jpeg": "jpg",
+        "image/png": "png",
+        "image/webp": "webp",
+        "image/gif": "gif"
+      };
+
+      const extension = extensions[image.type];
+
+      if (!extension) {
+        return jsonResponse(
+          { ok: false, error: "Formato no admitido. Usá JPG, PNG, WEBP o GIF." },
+          400
+        );
+      }
 
       const imageKey = `images/${id}.${extension}`;
 
@@ -58,47 +121,57 @@ export default async (req) => {
     }
 
     const product = {
+      ...(existing || {}),
+      ...data,
       id,
       name,
-      season: String(form.get("season") || ""),
-      audience: String(form.get("audience") || ""),
-      category: String(form.get("category") || ""),
-      subcategory: String(form.get("subcategory") || ""),
-      fabric: String(form.get("fabric") || ""),
-      price: String(form.get("price") || ""),
-      sizes: String(form.get("sizes") || ""),
-      colors: String(form.get("colors") || ""),
-      description: String(form.get("description") || ""),
+      season: String(data.season || ""),
+      audience: String(data.audience || ""),
+      category: String(data.category || ""),
+      subcategory: String(data.subcategory || ""),
+      fabric: String(data.fabric || ""),
+      price: String(data.price || ""),
+      sizes: Array.isArray(data.sizes)
+        ? data.sizes
+        : String(data.sizes || "")
+            .split(",")
+            .map((value) => value.trim())
+            .filter(Boolean),
+      colors: Array.isArray(data.colors)
+        ? data.colors
+        : String(data.colors || "")
+            .split(",")
+            .map((value) => value.trim())
+            .filter(Boolean),
+      description: String(data.description || ""),
       image: imageUrl,
-      active: true,
-      createdAt: new Date().toISOString()
+      active: data.active ?? existing?.active ?? true,
+      updatedAt: new Date().toISOString()
     };
 
-    products.push(product);
+    if (existingIndex >= 0) {
+      products[existingIndex] = product;
+    } else {
+      products.push({
+        ...product,
+        createdAt: new Date().toISOString()
+      });
+    }
 
     await store.set("products", JSON.stringify(products), {
       metadata: { contentType: "application/json" }
     });
 
-    return new Response(
-      JSON.stringify({ ok: true, product }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json" }
-      }
-    );
+    return jsonResponse({ ok: true, product });
   } catch (error) {
-    console.error(error);
+    console.error("Error al guardar producto:", error);
 
-    return new Response(
-      JSON.stringify({
-        ok: false,
-        error: "No se pudo guardar el producto"
-      }),
+    return jsonResponse(
       {
-        status: 500,
-        headers: { "Content-Type": "application/json" }
-      }
+        ok: false,
+        error: `No se pudo guardar: ${error.message || "error interno"}`
+      },
+      500
     );
   }
 };
